@@ -1,0 +1,118 @@
+package xu.sheng.jiang.test;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.commons.collections4.MapUtils;
+
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
+import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.ColumnText;
+import com.itextpdf.text.pdf.PdfContentByte;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
+
+/**
+ * 生成多页的pdf并加上脚标
+ * 
+ * @author xushjiang
+ *
+ */
+public class CreatPDFByPageAndfooter {
+
+	private static String PDF_PATH = "E://creatFile//CreatPDFByPageAndfooter.pdf";
+
+	/**
+	 * 生成pdf模板
+	 * 
+	 * @throws Exception
+	 */
+	public static void createTemplatePDF(Document document, Map<String, Object> data, int currentPage, int tatolPage,
+			PdfContentByte cb) throws Exception {
+
+		// 创建字体
+		BaseFont unicode = BaseFont.createFont(
+				System.getProperty("user.dir") + "/src/main/webapp/resources/qhj-resources/font/FZYTK.TTF",
+				BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+		Font font = new Font(unicode, 12, Font.NORMAL, BaseColor.DARK_GRAY);
+
+		// 编辑文档，填充数据
+		PdfPTable table = new PdfPTable(6);
+		table.setWidthPercentage(100);
+		table.addCell(new Phrase("项目名称", font));
+		table.addCell(new Phrase(MapUtils.getString(data, "project_name", "null"), font));
+		table.addCell(new Phrase("unit", font));
+		PdfPCell cell = new PdfPCell(new Phrase(MapUtils.getString(data, "unit", "null"), font));
+		cell.setColspan(3);
+		table.addCell(cell);
+
+		// 设置签名位置
+		// 设置页码
+		if (currentPage == tatolPage) {
+			ColumnText[] ct = new ColumnText[3];
+			ct[0].showTextAligned(cb, Element.ALIGN_BOTTOM, new Phrase("监理单位：", font), document.left(50),
+					document.bottom(30), 0);
+			Rectangle rect = new Rectangle(36, 36, 559, 261);
+			ct[0].setSimpleColumn(rect);
+			ct[1].showTextAligned(cb, Element.ALIGN_BOTTOM, new Phrase("监理工程师：", font), document.right(200),
+					document.bottom(30), 0);
+			ct[2].showTextAligned(cb, Element.ALIGN_BOTTOM, new Phrase(String.format("%s/%s", currentPage, tatolPage)),
+					document.right(), document.bottom(), 0);
+		} else {
+			ColumnText.showTextAligned(cb, Element.ALIGN_BOTTOM,
+					new Phrase(String.format("%s/%s", currentPage, tatolPage)), document.right(), document.bottom(), 0);
+		}
+
+		// 将表格添加进文档
+		document.add(table);
+	}
+
+	public static void main(String[] args) {
+
+		try {
+
+			int tatolPage = 2;
+			int currentPage = 0;
+
+			// 设置文件路径
+			File file1 = new File(PDF_PATH);
+			file1.getParentFile().mkdirs();
+			FileOutputStream file = new FileOutputStream(PDF_PATH);
+
+			// 创建文档
+			Document document = new Document();
+			document.setPageCount(2);
+			PdfWriter writer = PdfWriter.getInstance(document, file);
+			document.open();
+			PdfContentByte cb = writer.getDirectContent();
+
+			// 文档数据
+			Map<String, Object> data = new HashMap<>();
+			data.put("project_name", "国贸360大厦");
+			data.put("unit", "建设单位");
+
+			// 第一页
+			createTemplatePDF(document, data, 1, tatolPage, cb);
+
+			// 第二页
+			document.newPage();
+			createTemplatePDF(document, data, 2, tatolPage, cb);
+
+			// 关闭文档，不关闭文档将不能正常生成
+			document.close();
+			System.out.println("success");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+}

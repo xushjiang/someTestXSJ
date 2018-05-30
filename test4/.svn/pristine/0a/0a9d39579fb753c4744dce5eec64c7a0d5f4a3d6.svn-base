@@ -1,0 +1,25 @@
+package xu.sheng.jiang.operation;
+
+import java.util.Date;
+
+import javax.jws.WebMethod;
+import javax.jws.WebService;
+import javax.xml.ws.Endpoint;
+
+@WebService
+public class WebServicePublish implements WebServiceInterface {
+
+	@Override
+	@WebMethod
+	public String getDate() throws Exception {
+
+		return "tody is " + new Date();
+	}
+
+	public String startService() throws Exception {
+
+		Endpoint.publish("http://192.168.1.236/webServece", new WebServicePublish());
+		return null;
+	}
+
+}

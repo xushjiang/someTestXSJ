@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:task="http://www.springframework.org/schema/task"	
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+           http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-3.2.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+           http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+		  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd"
+		>
+
+	<!-- 数据库配置 -->
+	<context:property-placeholder location="resources\jdbc.properties" />
+	<beans:bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource" destroy-method="close">
+		<beans:property name="driverClassName" value="${db.driverClassName}" />
+		<beans:property name="url" value="${db.url}" />
+		<beans:property name="username" value="${db.username}" />
+		<beans:property name="password" value="${db.password}" />
+		<!-- 连接池启动时的初始值 -->
+		<beans:property name="initialSize" value="${db.initialSize}" />
+		<!-- 连接池的最大值 -->
+		<beans:property name="maxTotal" value="${db.maxTotal}" />
+		<!-- 最大空闲值.当经过一个高峰时间后，连接池可以慢慢将已经用不到的连接慢慢释放一部分，一直减少到maxIdle为止 -->
+		<beans:property name="maxIdle" value="${db.maxIdle}" />
+		<!-- 最小空闲值.当空闲的连接数少于阀值时，连接池就会预申请去一些连接，以免洪峰来时来不及申请 -->
+		<beans:property name="minIdle" value="${db.minIdle}" />
+		<!--（如果没有可用连接）池在抛出异常前等待的一个连接被归还的最大毫秒数，设置为-1则等待时间不确定 -->
+		<beans:property name="maxWaitMillis" value="${db.maxWaitMillis}" />
+		<!--是否在自动回收超时连接的时候打印连接的超时错误 -->
+		<beans:property name="logAbandoned" value="${db.logAbandoned}" />
+		<!--标记是否删除超过removeAbandonedTimout所指定时间的被遗弃的连接。 -->
+		<beans:property name="removeAbandonedOnMaintenance" value="${db.removeAbandonedOnMaintenance}" />
+		<!--一个被抛弃连接可以被移除的超时时间，单位为秒 -->
+		<beans:property name="removeAbandonedTimeout" value="${db.removeAbandonedTimeout}" />
+	</beans:bean>
+
+	<!-- 适用于springJDBC -->
+	<!-- <beans:bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">  
+        <beans:property name="dataSource" ref="dataSource" />
+    </beans:bean>  -->
+    
+    <!-- MyBatis -->  
+    <beans:bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"> 
+        <beans:property name="dataSource" ref="dataSource" />  
+        <!-- 自动扫描mapping.xml文件 -->  
+        <beans:property name="mapperLocations" value="classpath*:xu/sheng/jiang/operation/*Mapper.xml"/>  
+    </beans:bean>  
+    <!-- DAO接口所在包名，Spring会自动查找其下的类 -->  
+    <beans:bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">  
+        <beans:property name="basePackage" value="xu.sheng.jiang.operation" />  
+        <beans:property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
+    </beans:bean>
+    
+     <!-- 事务 -->
+	<beans:bean id="txManager"  class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+        <beans:property name="dataSource" ref="dataSource" />  
+    </beans:bean>       
+    <tx:annotation-driven transaction-manager="txManager"/>   
+     
+     <!-- AOP配置 -->
+    <!--  <aop:aspectj-autoproxy/>
+     <beans:bean id="loggerWritter" class="xu.sheng.jiang.aspect.LoggerWritter"/>
+     <aop:config>
+     	<aop:pointcut expression="execution(* xu.sheng.jiang.operation.SnakeDao.*(..))" id="loggerWritterPoint"/>
+     	<aop:pointcut expression="execution(* xu.sheng.jiang.operation.Snake.*(..)) and args(req,res)" id="requestLoggerPoint"/>
+     	<aop:aspect id="loggerWritterAop" ref="loggerWritter">
+     		<aop:before method="dobefor" pointcut-ref="loggerWritterPoint"/>
+     		<aop:before method="requestLogger" pointcut-ref="requestLoggerPoint" arg-names="req,res"/>
+     	</aop:aspect>
+     </aop:config> -->
+     <!-- AOP配置结束 -->
+     
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven/>
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+
+	<context:component-scan base-package="xu.sheng.jiang" />
+
+
+
+</beans:beans>

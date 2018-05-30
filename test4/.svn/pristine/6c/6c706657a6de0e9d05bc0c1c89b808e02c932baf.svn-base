@@ -1,0 +1,12 @@
+package xu.sheng.jiang.user;
+
+import org.springframework.web.servlet.ModelAndView;
+
+public class UserAction {
+
+	public ModelAndView getUserLists() throws Exception {
+
+		return null;
+	}
+
+}

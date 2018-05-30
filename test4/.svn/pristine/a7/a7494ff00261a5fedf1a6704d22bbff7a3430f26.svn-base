@@ -1,0 +1,178 @@
+package xu.sheng.jiang.test;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class SomeTest extends AbstractClass {
+
+	public static void main(String[] args) {
+
+		try {
+//			switchDemo();
+//			pattern();
+//			tryTest();
+//			httpRequestGet();
+			string();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	/**
+	 * 测试switch能不能使用string做参数
+	 * 
+	 * @throws Exception
+	 */
+	private static void switchDemo() throws Exception {
+
+		String str = "a";
+		switch (str) {
+		case "a":
+			System.err.println("is 'a'");
+			break;
+		case "b":
+			System.err.println("is 'b'");
+			break;
+		default:
+			break;
+		}
+
+	}
+
+//	@Override
+//	public void getString() throws Exception {
+//
+//	};
+
+	/**
+	 * 正则表达式
+	 * 
+	 * @throws Exception
+	 */
+	public static void pattern() throws Exception {
+
+		String str_1 = "${e}weiruan2@owqeutlook.comWE";
+		String regex = "\\$\\{.*\\}[a-zA_Z]*\\d*\\@{1}\\w*\\.com[A-Z]*";
+		boolean flag = Pattern.matches(regex, str_1);
+
+		Pattern pattern = Pattern.compile(regex);
+		Matcher matcher = pattern.matcher(str_1);
+
+//		pattern.
+
+		System.out.println(flag);
+		System.out.println(matcher.matches());
+	}
+
+	/**
+	 * 测试try catch finally
+	 * 
+	 * @throws Exception
+	 */
+	private static int tryTest() throws Exception {
+
+		int sum = 0;
+		try {
+			int i_1 = 3;
+			int i_2 = 4;
+			sum = i_1 + i_2;
+//			int i_3 = Integer.parseInt("a");
+			return sum;
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			sum = sum + 3;
+			System.out.println(sum + ":" + System.currentTimeMillis());
+			System.err.println("erro" + ":" + System.currentTimeMillis());
+		}
+		System.err.println(sum + ":" + System.currentTimeMillis());
+		return sum;
+	}
+
+	public static void string() throws Exception{
+		StringBuffer sql = new StringBuffer();
+		List<Object> objs = new ArrayList<>();
+		String[] st = { "1", "2", "3", "4" };
+		for (int i = 0; i < st.length; i++) {
+			int type = Integer.parseInt(st[i]);
+			switch (type) {
+			case 1:
+				sql.append("a");
+				break;
+			case 2:
+				sql.append("b");
+				break;
+			case 3:
+				sql.append("c");
+				break;
+			case 4:
+				sql.append("d");
+				break;
+			default:
+				break;
+			}
+		}
+		System.out.println(sql.toString());
+	}
+
+	/**
+	 * 
+	 * @throws Exception
+	 */
+	public static void httpRequestGet() throws Exception {
+
+		String result = "";
+		BufferedReader in = null;
+		try {
+			String url = "http://192.168.1.236:8083/test4/getInfo";
+			URLConnection connection = (new URL(url)).openConnection();
+			HttpURLConnection hc = (HttpURLConnection) connection;
+
+			// 设置通用的请求属性
+			hc.setRequestProperty("accept", "*/*");
+			hc.setRequestProperty("connection", "Keep-Alive");
+			hc.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+			hc.setRequestMethod("GET");
+
+			// 建立实际的连接
+			hc.connect();
+
+			// 获取所有响应头字段
+			Map<String, List<String>> map = hc.getHeaderFields();
+			// 遍历所有的响应头字段
+			for (String key : map.keySet()) {
+				System.out.println(key + "--->" + map.get(key));
+			}
+			// 定义 BufferedReader输入流来读取URL的响应
+			in = new BufferedReader(new InputStreamReader(hc.getInputStream()));
+			String line;
+			while ((line = in.readLine()) != null) {
+				result += line;
+			}
+		} catch (Exception e) {
+			System.out.println("发送GET请求出现异常！" + e);
+			e.printStackTrace();
+		}
+		// 使用finally块来关闭输入流
+		finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+		System.out.println(result);
+	}
+
+}

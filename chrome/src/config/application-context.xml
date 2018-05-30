@@ -1,0 +1,26 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.0.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd">
+
+	<!-- 数据源配置 -->
+	<context:property-placeholder location="classpath:/config/dataSource.properties" />
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource">
+		<property name="driverClassName" value="${db.driverClassName}" />
+		<property name="url" value="${db.url}" />
+		<property name="username" value="${db.userName}" />
+		<property name="password" value="${db.password}" />
+	</bean>
+
+	<!-- 基于注解注册请求映射bean RequestMappingHandlerMapping用来处理@RequestMapping，并注册到映射表；-->
+	<!-- 请求适配器bean RequestMappingHandlerAdapter，决定请求应该使用哪个类的哪个方法 -->
+	<mvc:annotation-driven />
+
+
+	<!-- 自动扫描operation下的类，被注解标记的类转成bean -->
+	<context:component-scan base-package="operation" />
+
+</beans>

@@ -27,7 +27,7 @@ public class ReadExcel {
 
 		try {
 			System.err.println("导入文件");
-			File file = new File("E://creatFile//files//竣工验收.xls");
+			File file = new File("E://creatFile//files//XXX.xls");
 			Workbook workBook = Workbook.getWorkbook(file);
 			Sheet sheet = workBook.getSheet(0);
 

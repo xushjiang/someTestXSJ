@@ -45,6 +45,8 @@ public class LogInit extends HttpServlet {
 			if (logger.isInfoEnabled()) {
 				String infoFile = contextPath + properties.getProperty("log4j.appender.I.File");// 设置info路径
 				properties.setProperty("log4j.appender.I.File", infoFile);
+				System.err.println("============================================================================");
+				System.err.println(infoFile);
 			}
 
 			if (logger.isWarnEnabled()) {

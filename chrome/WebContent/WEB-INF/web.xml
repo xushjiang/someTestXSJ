@@ -25,7 +25,7 @@
       <servlet-class>core.LogInit</servlet-class>
       <init-param>
         <param-name>log4jInit</param-name>
-        <param-value>WEB-INF\classes\log4j.properties</param-value>
+        <param-value>WEB-INF\classes\config\log4j.properties</param-value>
       </init-param>
       <load-on-startup>1</load-on-startup>
     </servlet>

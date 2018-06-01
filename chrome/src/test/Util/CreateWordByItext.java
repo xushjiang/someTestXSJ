@@ -108,9 +108,10 @@ public class CreateWordByItext {
 		Paragraph picture = new Paragraph();
 		for (String url : pictureUrl) {
 			Image img = Image.getInstance(url);
-			img.scaleAbsolute(200, 200);
+			img.scalePercent(4, 3);
 			picture.add(img);
 			picture.add("  ");
+			System.err.println(img.getHeight());
 		}
 		document.add(picture);
 	}
